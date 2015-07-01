@@ -1,7 +1,7 @@
 ﻿var models = require('../models/models.js');
 
 exports.load = function(req, res, next, quizId){
-	models.Quiz.find(quizId).then(
+	models.Quiz.findById(quizId).then(
 		function(quiz){
 			if(quiz){
 				req.quiz = quiz;
@@ -31,13 +31,13 @@ exports.index = function(req, res){
 };
 
 exports.show = function(req, res){
-	models.Quiz.find(req.params.quizId).then(function(quiz){
+	models.Quiz.findById(req.params.quizId).then(function(quiz){
 		res.render('quizes/show', { quiz: req.quiz, errors:[] });
 	})	
 };
 
 exports.answer = function(req, res){
-	models.Quiz.find(req.params.quizId).then(function(quiz){
+	models.Quiz.findById(req.params.quizId).then(function(quiz){
 		var resultado = 'Incorrecto';
 		if(req.query.respuesta.toLowerCase()=== req.quiz.respuesta.toLowerCase()){
 			resultado='Correcto';
