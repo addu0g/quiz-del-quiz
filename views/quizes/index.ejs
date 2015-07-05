@@ -1,5 +1,12 @@
 <form method="get" action="quizes">
 	<input type="text" name="search" placeholder="Introduzca texto a buscar"/>
+	
+	<select name="CategoriumId" id="categorias">
+		<option value="0">Seleccione una categoría</option>
+		<% var i; for(i=0;i < categoria.length;i++){%>
+			<option value=<%= (i+1) %>><%= categoria[i].nombre %></option>
+		<% } %>
+	</select>
 	<input type="submit" value="Buscar"/>
 </form>
 <br/>

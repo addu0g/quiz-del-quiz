@@ -23,11 +23,37 @@ var sequelize = new Sequelize(DB_name,user,pwd,
 		});
 
 var quiz_path = path.join(__dirname, 'quiz');	
-var Quiz = sequelize.import(path.join(__dirname, 'quiz'));
+var Quiz = sequelize.import(quiz_path);
+
+var categoria_path = path.join(__dirname, 'categoria');
+var Categoria = sequelize.import(categoria_path);
+
+Quiz.belongsTo(Categoria);
+Categoria.hasMany(Quiz)
 
 exports.Quiz = Quiz;
+exports.Categoria = Categoria;
 
 sequelize.sync().then(function(){
+	Categoria.count().then(function(count)
+	{
+		if(count === 0){
+			Categoria.create({
+				nombre: 'Humanidades'
+			});
+			Categoria.create({
+				nombre: 'Ocio'
+			});
+			Categoria.create({
+				nombre: 'Ciencia'
+			});
+			Categoria.create({
+				nombre: 'Tecnología'
+			}).then(function(){
+				console.log("Tabla de temas creada");
+			});
+		}
+	});
 	Quiz.count().then(function(count){
 		if(count === 0){
 			Quiz.create(
@@ -37,7 +63,7 @@ sequelize.sync().then(function(){
 				{pregunta: 'Capital de Portugal', respuesta:'Lisboa'}
 			)
 			.then(function(){
-				console.log('Base de datos inicializada')
+				console.log('Tabla de preguntas creada')
 			});
 		}
 	})

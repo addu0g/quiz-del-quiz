@@ -18,15 +18,20 @@ exports.load = function(req, res, next, quizId){
 exports.index = function(req, res){
 	if(req.query.search === undefined){
 		models.Quiz.findAll().then(function(quizes){
-			res.render('quizes/index.ejs', {quizes: quizes, errors: []});
+			models.Categoria.findAll().then(function(cat){
+				res.render('quizes/index.ejs', {quizes: quizes, categoria:cat, errors: []});
+			});
 		}).catch(function(error){next(error)});
 	}
 	else{
 		var regular =new RegExp(' ', 'g'); 
 		var patron = ('%'+req.query.search+'%').replace(regular, '%');
-		models.Quiz.findAll({where:["pregunta like ?", patron]}).then(function(quizes){
-			res.render('quizes/index.ejs', {quizes:quizes, errors: []});
-		}).catch(function(error){next(error)});		
+		
+		models.Quiz.findAll({where:["pregunta like ? AND CategoriumId = ?", patron, req.query.CategoriumId ]}).then(function(quizes){
+				models.Categoria.findAll().then(function(cat){
+					res.render('quizes/index.ejs', {quizes:quizes, categoria:cat, errors: []});
+				});
+		}).catch(function(error){next(error)});
 	}
 };
 
@@ -48,15 +53,19 @@ exports.answer = function(req, res){
 
 exports.new = function(req, res){
 	var quiz = models.Quiz.build(
-		{pregunta:'Pregunta', respuesta:'Respuesta'}
+		{pregunta:'Pregunta', respuesta:'Respuesta', CategoriumId : 1}
 	);
-	res.render('quizes/new', {quiz:quiz, errors : [] });
+	models.Categoria.findAll().then(function(categ){
+		res.render('quizes/new', {quiz:quiz, categoria:categ, errors : [] });
+	});
 };
 
 exports.create = function(req, res){
+	
 	var quiz = models.Quiz.build(
 		req.body.quiz
 	);
+	quiz.CategoriumId =parseInt(req.body.CategoriumId)+1;
 	quiz
 	.validate()
 	.then(function(err){
@@ -64,7 +73,7 @@ exports.create = function(req, res){
 			res.render('quizes/new', {quiz:quiz, errors: err.errors});
 		}else{
 			quiz
-			.save({fields:["pregunta", "respuesta"]})
+			.save({fields:["pregunta", "respuesta", "CategoriumId"]})
 			.then(function(){res.redirect('/quizes')})
 		}
 	});
@@ -72,14 +81,16 @@ exports.create = function(req, res){
 
 exports.edit = function(req, res){
 	var quiz = req.quiz;
+	models.Categoria.findAll().then(function(categ){
+		res.render('quizes/edit', { quiz:quiz, categoria:categ, errors: [] });		
+	});
 	
-	res.render('quizes/edit', { quiz:quiz, errors: [] });
 }
 
 exports.update = function(req, res){
 	req.quiz.pregunta = req.body.quiz.pregunta;
 	req.quiz.respuesta = req.body.quiz.respuesta;
-	
+	req.quiz.CategoriumId = req.body.CategoriumId;
 	req.quiz
 	.validate()
 	.then(
@@ -88,7 +99,7 @@ exports.update = function(req, res){
 				res.render('quizes/edit', {quiz: req.quiz, errors:err.errors});
 			}else{
 				req.quiz
-				.save({fields: ["pregunta", "respuesta"]})
+				.save({fields: ["pregunta", "respuesta", "CategoriumId"]})
 				.then(function(){ res.redirect('/quizes');});
 			}
 		}
@@ -98,6 +109,6 @@ exports.update = function(req, res){
 exports.destroy = function(req, res){
 	console.log("------>"+req.quiz);
 	req.quiz.destroy().then(function(){
-		res.redirect('/');
+		res.redirect('/quizes');
 	}).catch(function(error){next(error)});
 }

@@ -2,5 +2,17 @@
 <input type="text" id="preg" name="quiz[pregunta]" value="<%= quiz.pregunta %>"/><p>
 <label for="resp" class="rem">Respuesta:</label>
 <input type="text" id="resp" name="quiz[respuesta]" value="<%= quiz.respuesta %>"/><p>
+<label for="cat" class="rem">Categria:</label>
+Seleccione una categor&iacute;a: 
+<select name="CategoriumId" id="categorias">
+<% var i; for(i=0;i < categoria.length;i++){%>
+	<option value=<%= (i+1) %>><%= categoria[i].nombre %></option>
+<% } %>
+</select>
+<input type="hidden" id="categoriaId" value="<%= quiz.CategoriumId %>"/>
+<script type="text/javascript">
+	document.getElementById("categorias").selectedIndex = document.getElementById("categoriaId").value-1;
+</script>
+<br/>
 <a href="/quizes"><button type="button">Cancelar</button></a>
 <input type="submit" value="Salvar"/>
