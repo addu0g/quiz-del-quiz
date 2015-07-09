@@ -23,11 +23,13 @@ exports.create = function(req, res){
 	var userController=require('./user_controller');
 	userController.autenticar(login, password, function(error, user){
 		if(error){
-			req.session.errors = [{ "message": 'Se h aproducido un error: '+ error }]
+			req.session.errors = [{ "message": 'Se ha producido un error: '+ error }]
 			req.redirect("/login");
 			return;
 		}
-		req.session.user = {id: user.id, username: user.username };
+		var fech = new Date(); 
+		var hora = fech.getMinutes();
+		req.session.user = {id: user.id, username: user.username, fecha :hora };
 		
 		res.redirect(req.session.redir.toString());
 	});	
