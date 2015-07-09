@@ -1,4 +1,9 @@
 exports.loginRequired = function(req, res, next){
+	var fech = new Date();
+	var resta = fech.getMinutes()-req.session.user.minutos;
+	if(resta>=2){
+		delete req.session.user;
+	} 
 	if(req.session.user)
 	{
 		next();	
@@ -28,8 +33,8 @@ exports.create = function(req, res){
 			return;
 		}
 		var fech = new Date(); 
-		var hora = fech.getMinutes();
-		req.session.user = {id: user.id, username: user.username, fecha :hora };
+		var min = fech.getMinutes();
+		req.session.user = {id: user.id, username: user.username, minutos :min };
 		
 		res.redirect(req.session.redir.toString());
 	});	
