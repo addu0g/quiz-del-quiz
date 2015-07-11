@@ -33,6 +33,22 @@ exports.index = function(req, res){
 	}
 };
 
+exports.statistics = function(res, res){
+	
+	models.Quiz.count().then(function(count){
+		models.Comment.count({where:{'publicado': 1}}).then(function(comm){
+			models.Comment.count({where:{'publicado':1}, include:[models.Quiz]}).then(function(pregCom){
+				models.Quiz.count({distinct: 'id', include:[{model: models.Comment, where: {'publicado':1 }}]}).then(function(pregCCom){
+					res.render('quizes/statistics.ejs', {preguntas : count, comentarios: comm, comentarioXpregunta:count/comm, 
+												preguntasSinComentario:count-pregCCom, preguntasConComentario:pregCCom, errors:[]});
+				})
+			})
+		})
+	})
+	
+	
+}
+
 exports.show = function(req, res){
 	models.Quiz.findById(req.params.quizId).then(function(quiz){
 		res.render('quizes/show', { quiz: req.quiz, errors:[] });

@@ -26,6 +26,8 @@ router.get('/quizes/:quizId(\\d+)/edit', 	sessionController.loginRequired,	quizC
 router.put('/quizes/:quizId(\\d+)', 		sessionController.loginRequired,	quizController.update);
 router.post('/quizes/:quizId(\\d+)',		sessionController.loginRequired,	quizController.destroy);
 
+router.get('/quizes/statistics', quizController.statistics);
+
 router.get('/quizes/:quizId(\\d+)/comments/new', commentController.new);
 router.post('/quizes/:quizId(\\d+)/comments', commentController.create);
 router.get('/quizes/:quizId(\\d+)/comments/:commentId(\\d+)/publish', 

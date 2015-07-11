@@ -4,6 +4,8 @@ exports.loginRequired = function(req, res, next){
 	var resta = fech.getMinutes()-req.session.user.minutos;
 	if(resta>=2){
 		delete req.session.user;
+	}else{
+		req.session.user.minutos =fech.getMinutes(); 
 	} 
 	if(req.session.user)
 	{
